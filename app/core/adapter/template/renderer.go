@@ -7,12 +7,15 @@ import (
 	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-framework/app/core/env"
 	"github.com/dulumao/Guten-framework/app/core/helpers/view"
+	"github.com/dulumao/Guten-framework/app/core/observer"
 	"github.com/dulumao/Guten-utils/conv"
 	"github.com/dulumao/Guten-utils/dump"
 	"github.com/dulumao/Guten-utils/file"
+	"github.com/dulumao/Guten-utils/safemap"
 	"github.com/labstack/echo"
 	"html/template"
 	"io"
+	"strings"
 )
 
 // 模板注册
@@ -122,18 +125,12 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 		panic(err)
 	}
 
-	// eventArgs = safemap.NewSafeMap()
-	// eventArgs.Set("name", name)
-	// eventArgs.Set("data", data)
-	// eventArgs.Set("buf", buf.Bytes())
-	// eventArgs.Set("context", context)
-	//
-	// // eventArgs = map[string]interface{}{
-	// // 	"name":    name,
-	// // 	"data":    data,
-	// // 	"buf":     buf.Bytes(),
-	// // 	"context": context,
-	// // }
+	eventArgs := safemap.NewSafeMap()
+	eventArgs.Set("name", name)
+	eventArgs.Set("data", data)
+
+	observer.Dispatcher.Emit("view.after."+GetViewEventName(name), eventArgs)
+
 	//
 	// vars.Kernel.Observer.Emit(constant.VIEW_AFTER+GetViewEventName(name), eventArgs)
 	//
@@ -152,4 +149,10 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 	// // out.Write(buf.Bytes())
 
 	return err
+}
+
+func GetViewEventName(name string) string {
+	var names = strings.Split(name, "/")
+
+	return "." + strings.Join(names, ".")
 }

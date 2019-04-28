@@ -1,6 +1,7 @@
 package template
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
@@ -36,7 +37,7 @@ func NewSetLoader(escapee jet.SafeWriter, dirs ...string) *jet.Set {
 	return jet.NewSetLoader(escapee, &OSFileSystemLoader{dirs: dirs})
 }
 
-func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx echo.Context) error {
+func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx echo.Context) error {
 	self.Engine.SetDevelopmentMode(!self.Cached)
 
 	self.Engine.AddGlobal("isLast", func(i, size int) bool { return i == size-1 })
@@ -121,15 +122,39 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 	vars.Set("context", ctx)
 	vars.Set("env", env.Value)
 
-	if err = t.Execute(w, vars, data); err != nil {
+	/*eventArgs := safemap.NewSafeMap()
+	eventArgs.Set("name", name)
+	eventArgs.Set("data", data)
+
+	observer.Dispatcher.Emit("view.before."+GetViewEventName(name), eventArgs)
+
+	name = conv.String(eventArgs.Get("name"))
+	data, _ = eventArgs.Get("data").(interface{})*/
+
+	buf := new(bytes.Buffer)
+
+	// if err = t.Execute(out, vars, data); err != nil {
+	// 	panic(err)
+	// }
+	//
+	if err = t.Execute(buf, vars, data); err != nil {
 		panic(err)
 	}
 
 	eventArgs := safemap.NewSafeMap()
 	eventArgs.Set("name", name)
 	eventArgs.Set("data", data)
+	eventArgs.Set("buf", buf.Bytes())
 
 	observer.Dispatcher.Emit("view.after."+GetViewEventName(name), eventArgs)
+
+	// buf := new(bytes.Buffer)
+
+	if buf, ok := eventArgs.Get("buf").([]byte); ok {
+		out.Write(buf)
+	} else if buf, ok := eventArgs.Get("buf").(string); ok {
+		out.Write([]byte(conv.String(buf)))
+	}
 
 	//
 	// vars.Kernel.Observer.Emit(constant.VIEW_AFTER+GetViewEventName(name), eventArgs)

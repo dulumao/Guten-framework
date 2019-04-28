@@ -144,6 +144,7 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	eventArgs := safemap.NewSafeMap()
 	eventArgs.Set("name", name)
 	eventArgs.Set("data", data)
+	eventArgs.Set("context", ctx)
 	eventArgs.Set("buf", buf.Bytes())
 
 	observer.Dispatcher.Emit("view.after."+GetViewEventName(name), eventArgs)

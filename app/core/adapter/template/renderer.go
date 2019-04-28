@@ -73,7 +73,7 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 
 		return data
 	})
-	self.Engine.AddGlobal("unescaped", func(x string) string {
+	self.Engine.AddGlobal("unescaped", func(x string) interface{} {
 		return template.HTML(x)
 	})
 	self.Engine.AddGlobal("GetFileSize", func(v uint64) interface{} {

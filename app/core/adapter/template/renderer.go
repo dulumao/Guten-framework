@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
+	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-framework/app/core/env"
 	"github.com/dulumao/Guten-framework/app/core/helpers/view"
 	"github.com/dulumao/Guten-utils/conv"
@@ -49,7 +50,7 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 
 		return false
 	})
-	self.Engine.AddGlobal("getLoopBlank", func(level int) interface{} {
+	self.Engine.AddGlobal("getLevelBlank", func(level int) interface{} {
 		var blank = ""
 
 		for i := 0; i < level; i++ {
@@ -80,6 +81,35 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 	})
 	self.Engine.AddGlobal("dump", func(i ...interface{}) {
 		dump.DD(i...)
+	})
+	self.Engine.AddGlobal("HasValidError", func(key string, context echo.Context) bool {
+		var errs = context.Get("errors")
+
+		if validErrors, can := errs.(error); can {
+			validResult := validation.GetErrorFields(validErrors, nil)
+
+			if _, ok := validResult[key]; ok {
+				return true
+			}
+		}
+
+		return false
+	})
+	self.Engine.AddGlobal("GetValidError", func(key string, context echo.Context) string {
+		var errs = context.Get("errors")
+		// uni := v.GetTranslator("zh_Hans_CN")
+		// uni := v.GetTranslator("en_US")
+		// validResult := validation.GetErrorFields(err, uni)
+
+		if validErrors, can := errs.(error); can {
+			validResult := validation.GetErrorFields(validErrors, nil)
+
+			if _, ok := validResult[key]; ok {
+				return validResult[key]["transText"]
+			}
+		}
+
+		return ""
 	})
 
 	for k, v := range view.Funcs.Items() {

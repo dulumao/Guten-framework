@@ -77,6 +77,10 @@ func New() *Validation {
 	return validation
 }
 
+func GetUniversalTranslator() *ut.UniversalTranslator {
+	return uni
+}
+
 // this is usually know or extracted from http 'Accept-Language' header
 // also see uni.FindTranslator(...)
 func (self *Validation) GetTranslator(locale string) (trans ut.Translator) {

@@ -64,9 +64,10 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 
 		return data
 	})
-	self.Engine.AddGlobal("unescaped", func(x string) interface{} {
-		return template.HTML(x)
-	})
+	// jet has `unsafe` func
+	// self.Engine.AddGlobal("unescaped", func(x string) interface{} {
+	// 	return template.HTML(x)
+	// })
 	self.Engine.AddGlobal("GetFileSize", func(v uint64) interface{} {
 		return file.FileSize(int64(v))
 	})

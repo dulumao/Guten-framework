@@ -4,5 +4,6 @@
 web
 app/src
 modules
+test
 
 cli.go

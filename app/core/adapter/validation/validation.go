@@ -1,5 +1,31 @@
 package validation
 
+/*
+v := validation.New()
+
+	s := struct {
+		Username          string `valid:"required"`
+		Email             string `valid:"required,email" json:"email"`
+		Password          string `valid:"required,eqfield=PasswordConfirmed,eq=2"`
+		PasswordConfirmed string `valid:"required"`
+		Type              string `valid:"eq=2"`
+	}{
+		Username:          "Matt Ma",
+		Email:             "admin@me.com",
+		Password:          "123456",
+		PasswordConfirmed: "1234567",
+		Type:              "2",
+	}
+
+	err := v.Validate(s)
+
+	if err != nil {
+		uni := v.GetTranslator("zh_Hans_CN")
+		validResult := validation.GetErrorFields(err, uni)
+		dump.DD(validResult)
+	}
+*/
+
 import (
 	"github.com/go-playground/locales/en_US"
 	"github.com/go-playground/locales/zh_Hans_CN"
@@ -217,12 +243,14 @@ func (self *Validation) Validate(i interface{}) error {
 	return self.v.Struct(i)
 }
 
-func GetErrorFields(err error, trans ut.Translator) map[string]string {
-	var errMsg = make(map[string]string)
+func GetErrorFields(err error, trans ut.Translator) map[string]map[string]string {
+	/*var errMsg = make(map[string]string)
 
 	if trans == nil {
 		return err.(validator.ValidationErrors).Translate(nil)
-	}
+	}*/
+
+	var errMsg = make(map[string]map[string]string)
 
 	for _, err := range err.(validator.ValidationErrors) {
 
@@ -241,8 +269,23 @@ func GetErrorFields(err error, trans ut.Translator) map[string]string {
 			fmt.Println()
 		*/
 
-		transFieldName, _ := trans.T(err.Field())
-		errMsg[err.Field()] = strings.Replace(err.Translate(trans), err.Field(), transFieldName, -1)
+		var transFieldName string
+		var locale string
+
+		if trans != nil {
+			transFieldName, _ = trans.T(err.Field())
+			locale = trans.Locale()
+		} else {
+			transFieldName = err.Field()
+		}
+		// errMsg[err.Field()] = strings.Replace(err.Translate(trans), err.Field(), transFieldName, -1)
+		errMsg[err.Field()] = map[string]string{
+			"ruleTagName":    err.Tag(),
+			"fieldName":      err.Field(),
+			"transFieldName": transFieldName,
+			"transText":      err.Translate(trans),
+			"locale":         locale,
+		}
 	}
 
 	return errMsg

@@ -130,7 +130,7 @@ func New() *echo.Echo {
 	app.Use(session.New(env.Value.Session.Name, store))
 
 	app.Renderer = template.New(false, env.Value.Framework.TemplateDirs...)
-	app.Validator = &validation.Validation{}
+	app.Validator = validation.New()
 
 	app.HTTPErrorHandler = func(err error, context echo.Context) {
 		// var code = http.StatusInternalServerError

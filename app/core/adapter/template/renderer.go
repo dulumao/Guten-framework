@@ -148,28 +148,13 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 
 	observer.Dispatcher.Emit("view.after."+GetViewEventName(name), eventArgs)
 
+	dump.DD("view.after."+GetViewEventName(name))
+
 	if buf, ok := eventArgs.Get("buf").([]byte); ok {
 		out.Write(buf)
 	} else if buf, ok := eventArgs.Get("buf").(string); ok {
 		out.Write([]byte(conv.String(buf)))
 	}
-
-	//
-	// vars.Kernel.Observer.Emit(constant.VIEW_AFTER+GetViewEventName(name), eventArgs)
-	//
-	// if buf, ok := eventArgs.Get("buf").([]byte); ok {
-	// 	out.Write(buf)
-	// } else if buf, ok := eventArgs.Get("buf").(string); ok {
-	// 	out.Write([]byte(conv.String(buf)))
-	// }
-	//
-	// // if buf, ok := eventArgs["buf"].([]byte); ok {
-	// // 	out.Write(buf)
-	// // } else if buf, ok := eventArgs["buf"].(string); ok {
-	// // 	out.Write([]byte(conv.String(buf)))
-	// // }
-	//
-	// // out.Write(buf.Bytes())
 
 	return err
 }

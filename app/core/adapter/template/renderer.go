@@ -122,5 +122,34 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 		panic(err)
 	}
 
+	// eventArgs = safemap.NewSafeMap()
+	// eventArgs.Set("name", name)
+	// eventArgs.Set("data", data)
+	// eventArgs.Set("buf", buf.Bytes())
+	// eventArgs.Set("context", context)
+	//
+	// // eventArgs = map[string]interface{}{
+	// // 	"name":    name,
+	// // 	"data":    data,
+	// // 	"buf":     buf.Bytes(),
+	// // 	"context": context,
+	// // }
+	//
+	// vars.Kernel.Observer.Emit(constant.VIEW_AFTER+GetViewEventName(name), eventArgs)
+	//
+	// if buf, ok := eventArgs.Get("buf").([]byte); ok {
+	// 	out.Write(buf)
+	// } else if buf, ok := eventArgs.Get("buf").(string); ok {
+	// 	out.Write([]byte(conv.String(buf)))
+	// }
+	//
+	// // if buf, ok := eventArgs["buf"].([]byte); ok {
+	// // 	out.Write(buf)
+	// // } else if buf, ok := eventArgs["buf"].(string); ok {
+	// // 	out.Write([]byte(conv.String(buf)))
+	// // }
+	//
+	// // out.Write(buf.Bytes())
+
 	return err
 }

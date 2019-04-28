@@ -148,8 +148,6 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 
 	observer.Dispatcher.Emit("view.after."+GetViewEventName(name), eventArgs)
 
-	// buf := new(bytes.Buffer)
-
 	if buf, ok := eventArgs.Get("buf").([]byte); ok {
 		out.Write(buf)
 	} else if buf, ok := eventArgs.Get("buf").(string); ok {
@@ -179,5 +177,5 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 func GetViewEventName(name string) string {
 	var names = strings.Split(name, "/")
 
-	return "." + strings.Join(names, ".")
+	return strings.Join(names, ".")
 }

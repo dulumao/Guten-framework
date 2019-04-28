@@ -10,6 +10,7 @@ import (
 	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-framework/app/core/env"
 	CoreMiddleware "github.com/dulumao/Guten-framework/app/core/middleware"
+	"github.com/dulumao/Guten-framework/app/core/observer"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/fatih/color"
 	"github.com/labstack/echo"
@@ -23,6 +24,7 @@ import (
 func New() *echo.Echo {
 	env.New()
 	cache.New()
+	observer.New()
 
 	app := echo.New()
 

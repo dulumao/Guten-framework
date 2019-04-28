@@ -50,7 +50,7 @@ func (self *Renderer) Render(w io.Writer, name string, data interface{}, ctx ech
 
 		return false
 	})
-	self.Engine.AddGlobal("getLevelBlank", func(level int) interface{} {
+	self.Engine.AddGlobal("getLevelBlank", func(level int) string {
 		var blank = ""
 
 		for i := 0; i < level; i++ {

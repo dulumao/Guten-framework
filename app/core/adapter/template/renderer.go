@@ -48,15 +48,8 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	self.Engine.AddGlobal("isNil", func(v interface{}) bool {
 		return v == nil
 	})
-	self.Engine.AddGlobal("formatTime", func(layout string, v interface{}) string {
-		switch t := v.(type) {
-		case time.Time:
-			return t.Format(layout)
-		case *time.Time:
-			return t.Format(layout)
-		default:
-			return ""
-		}
+	self.Engine.AddGlobal("isNilTime", func(v *time.Time) bool {
+		return v == nil
 	})
 	self.Engine.AddGlobal("getCsrf", func(context echo.Context) string {
 		return conv.String(context.Get("csrf"))

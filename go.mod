@@ -9,7 +9,7 @@ require (
 	github.com/Unknwon/com v0.0.0-20190321035513-0fed4efef755
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/dulumao/Guten-utils v0.0.0-20190419080528-e1ead9f82784
+	github.com/dulumao/Guten-utils v0.0.0-20190430080047-f2c8b640ab7b
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect

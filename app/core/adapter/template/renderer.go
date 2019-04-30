@@ -78,6 +78,9 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	self.Engine.AddGlobal("dump", func(i ...interface{}) {
 		dump.DD(i...)
 	})
+	self.Engine.AddGlobal("dump2", func(i ...interface{}) {
+		dump.DD2(i...)
+	})
 	self.Engine.AddGlobal("HasValidError", func(key string, context echo.Context) bool {
 		var errs = context.Get("errors")
 

@@ -35,6 +35,8 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumC
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dulumao/Guten-utils v0.0.0-20190419080528-e1ead9f82784 h1:zpMljvs6su06UpJkZiWIJlGH/Lp7+l2Pe6Ym2iBvwlg=
 github.com/dulumao/Guten-utils v0.0.0-20190419080528-e1ead9f82784/go.mod h1:dDGVVXgcb0WvDAPFAXEcMygd8a4t1MDkFupD5jjq/ik=
+github.com/dulumao/Guten-utils v0.0.0-20190430080047-f2c8b640ab7b h1:bd0YVeVwxfwap88jVtK5IgQNVnkuArdsJHUsmrpxGmY=
+github.com/dulumao/Guten-utils v0.0.0-20190430080047-f2c8b640ab7b/go.mod h1:AJ1R8HFeR1lPT5tEECY1jEjdiuCxF7gLXF51JLCLSZI=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
 github.com/eapache/queue v1.1.0/go.mod h1:6eCeP0CKFpHLu8blIFXhExK/dRa7WDZfr6jVFPTqq+I=

@@ -99,6 +99,30 @@ func (self *Model) Count(wheres ...[]func(*gorm.DB) *gorm.DB) int {
 	return count
 }
 
+func (self *Model) Select(v interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) *gorm.DB {
+	var query = self.GetDB().Table(self.instance.TableName())
+
+	if len(wheres) > 0 {
+		for _, scope := range wheres[0] {
+			query = query.Scopes(scope)
+		}
+	}
+
+	return query.Select(v)
+}
+
+func (self *Model) Where(v interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) *gorm.DB {
+	var query = self.GetDB().Table(self.instance.TableName())
+
+	if len(wheres) > 0 {
+		for _, scope := range wheres[0] {
+			query = query.Scopes(scope)
+		}
+	}
+
+	return query.Where(v)
+}
+
 func (self *Model) First(out interface{}) error {
 	if err := self.GetDB().Table(self.instance.TableName()).Where(self.instance).First(out).Error; err != nil {
 		return err

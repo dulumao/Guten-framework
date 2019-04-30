@@ -122,15 +122,6 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	vars.Set("context", ctx)
 	vars.Set("env", env.Value)
 
-	/*eventArgs := safemap.NewSafeMap()
-	eventArgs.Set("name", name)
-	eventArgs.Set("data", data)
-
-	observer.Dispatcher.Emit("view.before."+GetViewEventName(name), eventArgs)
-
-	name = conv.String(eventArgs.Get("name"))
-	data, _ = eventArgs.Get("data").(interface{})*/
-
 	buf := new(bytes.Buffer)
 
 	// if err = t.Execute(out, vars, data); err != nil {
@@ -152,7 +143,7 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	if buf, ok := eventArgs.Get("buf").([]byte); ok {
 		out.Write(buf)
 	} else if buf, ok := eventArgs.Get("buf").(string); ok {
-		out.Write([]byte(conv.String(buf)))
+		out.Write([]byte(buf))
 	}
 
 	return err

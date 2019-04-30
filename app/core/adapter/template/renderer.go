@@ -17,6 +17,7 @@ import (
 	"html/template"
 	"io"
 	"strings"
+	"time"
 )
 
 // 模板注册
@@ -44,6 +45,19 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	self.Engine.AddGlobal("isNotLast", func(i, size int) bool { return i != size-1 })
 	self.Engine.AddGlobal("route", ctx.Echo().Reverse)
 	self.Engine.AddGlobal("printf", fmt.Sprintf)
+	self.Engine.AddGlobal("isNil", func(v interface{}) bool {
+		return v == nil
+	})
+	self.Engine.AddGlobal("formatTime", func(layout string, v interface{}) string {
+		switch t := v.(type) {
+		case time.Time:
+			return t.Format(layout)
+		case *time.Time:
+			return t.Format(layout)
+		default:
+			return ""
+		}
+	})
 	self.Engine.AddGlobal("getCsrf", func(context echo.Context) string {
 		return conv.String(context.Get("csrf"))
 	})

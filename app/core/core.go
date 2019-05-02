@@ -123,7 +123,7 @@ func New() *echo.Echo {
 		}
 	})
 
-	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+	app.Use(CoreMiddleware.CSRFWithConfig(CoreMiddleware.CSRFConfig{
 		TokenLookup: "form:_token",
 		Skipper: func(context echo.Context) bool {
 			// paths := strings.Split(strings.TrimPrefix(context.Request().URL.Path, "/"), "/")
@@ -155,20 +155,22 @@ func New() *echo.Echo {
 			message = err.Error()
 		}
 
-		app.Logger.Error(err.Error())
+		if !env.Value.Server.Debug {
+			message = "发生致命错误了"
+		} else {
+			// app.Logger.Error(err.Error())
+		}
 
-		if app.Debug {
-			if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
-				context.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"message": err.Error(),
-				})
-			} else if context.Request().Method == echo.HEAD { // Issue #608 {
-				err = context.NoContent(http.StatusInternalServerError)
-			} else {
-				err = context.Render(http.StatusOK, "error/fail", map[string]interface{}{
-					"message": message,
-				})
-			}
+		if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
+			context.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"message": message,
+			})
+		} else if context.Request().Method == echo.HEAD { // Issue #608 {
+			err = context.NoContent(http.StatusInternalServerError)
+		} else {
+			err = context.Render(http.StatusOK, "error/fail", map[string]interface{}{
+				"message": message,
+			})
 		}
 		/*if app.Debug {
 			if !context.Response().Committed {

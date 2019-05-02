@@ -155,9 +155,9 @@ func New() *echo.Echo {
 			message = err.Error()
 		}
 
-		if !app.Debug {
-			app.Logger.Print(err.Error())
+		app.Logger.Print(err.Error())
 
+		if app.Debug {
 			if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
 				context.JSON(http.StatusInternalServerError, map[string]interface{}{
 					"message": err.Error(),

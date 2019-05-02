@@ -51,8 +51,8 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	self.Engine.AddGlobal("isNilTime", func(v *time.Time) bool {
 		return v == nil
 	})
-	self.Engine.AddGlobal("getCsrf", func(context echo.Context) string {
-		return conv.String(context.Get("csrf"))
+	self.Engine.AddGlobal("getCsrf", func() string {
+		return conv.String(ctx.Get("csrf"))
 	})
 	self.Engine.AddGlobal("isEqual", func(v1 interface{}, v2 interface{}) bool {
 		if v1 == v2 {
@@ -88,8 +88,8 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	self.Engine.AddGlobal("dump2", func(i ...interface{}) {
 		dump.DD2(i...)
 	})
-	self.Engine.AddGlobal("HasValidError", func(key string, context echo.Context) bool {
-		var errs = context.Get("errors")
+	self.Engine.AddGlobal("HasValidError", func(key string) bool {
+		var errs = ctx.Get("errors")
 
 		if validErrors, can := errs.(error); can {
 			validResult := validation.GetErrorFields(validErrors, nil)
@@ -101,8 +101,8 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 
 		return false
 	})
-	self.Engine.AddGlobal("GetValidError", func(key string, context echo.Context) string {
-		var errs = context.Get("errors")
+	self.Engine.AddGlobal("GetValidError", func(key string) string {
+		var errs = ctx.Get("errors")
 		// uni := v.GetTranslator("zh_Hans_CN")
 		// uni := v.GetTranslator("en_US")
 		// validResult := validation.GetErrorFields(err, uni)

@@ -158,7 +158,7 @@ func New() *echo.Echo {
 		if !env.Value.Server.Debug {
 			message = "发生致命错误了"
 		} else {
-			// app.Logger.Error(err.Error())
+			app.Logger.Error(err.Error())
 		}
 
 		if !context.Response().Committed {

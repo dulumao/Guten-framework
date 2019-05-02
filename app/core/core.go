@@ -155,7 +155,7 @@ func New() *echo.Echo {
 			message = err.Error()
 		}
 
-		app.Logger.Print(err.Error())
+		app.Logger.Error(err.Error())
 
 		if app.Debug {
 			if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {

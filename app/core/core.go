@@ -34,6 +34,7 @@ func New() *echo.Echo {
 	app := echo.New()
 
 	app.HideBanner = true
+	app.Debug = env.Value.Server.Debug
 
 	if l, ok := app.Logger.(*log.Logger); ok {
 		// l.SetHeader(`(${long_file}:${line}) ${level}`)

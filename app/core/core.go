@@ -157,7 +157,6 @@ func New() *echo.Echo {
 
 		if !env.Value.Server.Debug {
 			message = "发生致命错误了"
-		} else {
 			app.Logger.Error(err.Error())
 		}
 
@@ -174,23 +173,6 @@ func New() *echo.Echo {
 				})
 			}
 		}
-		/*if app.Debug {
-			if !context.Response().Committed {
-				if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
-					context.JSON(code, map[string]interface{}{
-						"message": err.Error(),
-					})
-				} else if context.Request().Method == echo.HEAD { // Issue #608 {
-					err = context.NoContent(code)
-				} else {
-					err = context.HTML(code, conv.String(message))
-				}
-			}
-		} else {
-			err = context.Render(http.StatusOK, "error/fail", nil)
-		}*/
-
-		// app.Logger.Error(err)
 	}
 
 	app.Static("/template", "web/assets/template")

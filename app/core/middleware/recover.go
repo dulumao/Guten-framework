@@ -3,7 +3,6 @@ package middleware
 import (
 	"fmt"
 	"github.com/dulumao/Guten-framework/app/core/env"
-	"github.com/dulumao/Guten-utils/dump"
 	"github.com/facebookgo/stack"
 	"github.com/fatih/color"
 	"github.com/labstack/echo"

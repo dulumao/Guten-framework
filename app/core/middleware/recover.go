@@ -60,7 +60,7 @@ func Recover() echo.MiddlewareFunc {
 					frames := stack.Callers(4)
 
 					if env.Value.Server.Debug {
-						println(fmt.Sprintf(logFmt, levelColor("PANIC")+pathColor(" at "+c.Request().URL.Path), err, frames.String()))
+						_ = fmt.Sprintf(logFmt, levelColor("PANIC")+pathColor(" at "+c.Request().URL.Path), err, frames.String())
 					}
 
 					file := appendGOPATH(frames[0].File)

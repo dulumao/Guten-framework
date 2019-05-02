@@ -161,16 +161,18 @@ func New() *echo.Echo {
 			// app.Logger.Error(err.Error())
 		}
 
-		if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
-			context.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"message": message,
-			})
-		} else if context.Request().Method == echo.HEAD { // Issue #608 {
-			err = context.NoContent(http.StatusInternalServerError)
-		} else {
-			err = context.Render(http.StatusOK, "error/fail", map[string]interface{}{
-				"message": message,
-			})
+		if !context.Response().Committed {
+			if context.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
+				context.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"message": message,
+				})
+			} else if context.Request().Method == echo.HEAD { // Issue #608 {
+				err = context.NoContent(http.StatusInternalServerError)
+			} else {
+				err = context.Render(http.StatusOK, "error/fail", map[string]interface{}{
+					"message": message,
+				})
+			}
 		}
 		/*if app.Debug {
 			if !context.Response().Committed {

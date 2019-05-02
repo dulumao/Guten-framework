@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/dulumao/Guten-framework/app/core/env"
 	"fmt"
+	"github.com/dulumao/Guten-framework/app/core/env"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -41,6 +41,10 @@ func New(app *echo.Echo) {
 		// DB.SetLogger(app.Logger)
 		// DB.SetLogger(gorm.Logger{app.Logger})
 
+		// DB.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
+		// DB.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
+		// DB.Callback().Delete().Replace("gorm:delete", deleteCallback)
+
 		DB.DB().SetMaxOpenConns(env.Value.Database.MaxOpen)
 		DB.DB().SetMaxIdleConns(env.Value.Database.MaxIdle)
 	}
@@ -48,4 +52,8 @@ func New(app *echo.Echo) {
 	if env.Value.Database.Debug {
 		DB = DB.Debug()
 	}
+}
+
+func CloseDB() {
+	defer DB.Close()
 }

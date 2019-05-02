@@ -1,9 +1,10 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"github.com/dulumao/Guten-framework/app/core/adapter/cache"
-	"github.com/dulumao/Guten-framework/app/core/adapter/context"
+	CoreContext "github.com/dulumao/Guten-framework/app/core/adapter/context"
 	"github.com/dulumao/Guten-framework/app/core/adapter/database"
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
 	"github.com/dulumao/Guten-framework/app/core/adapter/template"
@@ -19,6 +20,10 @@ import (
 	"github.com/labstack/gommon/random"
 	"net/http"
 	"os"
+	"os/signal"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 func New() *echo.Echo {
@@ -109,7 +114,7 @@ func New() *echo.Echo {
 
 	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			cc := &context.Context{Context: c}
+			cc := &CoreContext.Context{Context: c}
 
 			cc.SetCodeCompiledTimeAt()
 
@@ -204,4 +209,33 @@ func New() *echo.Echo {
 
 func Serve(app *echo.Echo) {
 	app.Logger.Panic(gracehttp.Serve(app.Server))
+}
+
+func GracefulServe(app *echo.Echo) {
+	go func() {
+		if err := app.Start(app.Server.Addr); err != nil {
+			app.Logger.Errorf("Shutting down the server with error:%v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	defer cancel()
+
+	if err := app.Server.Shutdown(ctx); err != nil {
+		app.Logger.Fatal(err)
+	}
+}
+
+func getCurrentDirectory() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+
+	if err != nil {
+		panic(err)
+	}
+
+	return strings.Replace(dir, "\\", "/", -1)
 }

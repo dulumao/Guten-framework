@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"github.com/dulumao/Guten-framework/app/core/adapter/Binder"
 	"github.com/dulumao/Guten-framework/app/core/adapter/cache"
 	CoreContext "github.com/dulumao/Guten-framework/app/core/adapter/context"
 	"github.com/dulumao/Guten-framework/app/core/adapter/database"
@@ -139,6 +140,7 @@ func New() *echo.Echo {
 
 	app.Renderer = template.New(false, env.Value.Framework.TemplateDirs...)
 	app.Validator = validation.New()
+	app.Binder = binder.New()
 
 	app.HTTPErrorHandler = func(err error, context echo.Context) {
 		// var code = http.StatusInternalServerError

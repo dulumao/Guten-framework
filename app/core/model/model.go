@@ -60,7 +60,7 @@ func (self *Model) Delete(unscoped ...bool) error {
 		}
 	}
 
-	return query.Delete(self.instance).Error
+	return query.Where(self.instance).Delete(self.instance).Error
 }
 
 // func (self *Model) Delete(wheres ...[]func(*gorm.DB) *gorm.DB) error {
@@ -94,7 +94,7 @@ func (self *Model) Count(wheres ...[]func(*gorm.DB) *gorm.DB) int {
 		}
 	}
 
-	query.Count(&count)
+	query.Where(self.instance).Count(&count)
 
 	return count
 }
@@ -108,7 +108,7 @@ func (self *Model) Select(v interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) *g
 		}
 	}
 
-	return query.Select(v)
+	return query.Where(self.instance).Select(v)
 }
 
 func (self *Model) Where(v interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) *gorm.DB {
@@ -140,7 +140,7 @@ func (self *Model) Get(out interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) err
 		}
 	}
 
-	if err := query.Find(out).Error; err != nil {
+	if err := query.Where(self.instance).Find(out).Error; err != nil {
 		return err
 	}
 

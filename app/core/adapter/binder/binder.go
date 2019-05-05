@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
@@ -165,6 +166,14 @@ func setWithProperType(valueKind reflect.Kind, val string, structField reflect.V
 		return err
 	}
 
+	var (
+		_        = reflect.TypeOf(string(""))
+		_        = reflect.TypeOf(map[string]interface{}{})
+		timeType = reflect.TypeOf(time.Time{})
+		_        = reflect.TypeOf(&time.Time{})
+		urlType  = reflect.TypeOf(url.URL{})
+	)
+
 	switch valueKind {
 	case reflect.Ptr:
 		return setWithProperType(structField.Elem().Kind(), val, structField.Elem())
@@ -197,22 +206,34 @@ func setWithProperType(valueKind reflect.Kind, val string, structField reflect.V
 	case reflect.String:
 		structField.SetString(val)
 	case reflect.Struct:
-		// 时间类型
-		var t time.Time
-		var err error
-		val = strings.Replace(val, " 00:00:00", "", -1)
-		if IsValidDate(val) {
-			t, err = ParseDate(val)
-			if err == nil {
-				structField.Set(reflect.ValueOf(t))
-			}
-		} else if IsValidTime(val) {
-			t, err = ParseTime(val)
-			if err == nil {
-				structField.Set(reflect.ValueOf(t))
-			}
+		if structField.Type().ConvertibleTo(timeType) {
+			decodeTime(structField, val)
+		} else if structField.Type().ConvertibleTo(urlType) {
+			decodeURL(structField, val)
 		}
-		break
+		// for _, f := range allowedTimeFormats {
+		// 	if p, err := time.Parse(f, val); err == nil {
+		// 		structField.Set(reflect.ValueOf(p))
+		// 		break
+		// 	}
+		// }
+		// 时间类型
+		// var t time.Time
+		// var err error
+		//
+		// val = strings.Replace(val, " 00:00:00", "", -1)
+		//
+		// if IsValidDate(val) {
+		// 	t, err = ParseDate(val)
+		// 	if err == nil {
+		// 		structField.Set(reflect.ValueOf(t))
+		// 	}
+		// } else if IsValidTime(val) {
+		// 	t, err = ParseTime(val)
+		// 	if err == nil {
+		// 		structField.Set(reflect.ValueOf(t))
+		// 	}
+		// }
 	default:
 		return errors.New("unknown type")
 	}
@@ -304,27 +325,87 @@ func setFloatField(value string, bitSize int, field reflect.Value) error {
 func ParseTime(date string) (time.Time, error) {
 	date = strings.Replace(date, "/", "-", -1)
 	date = strings.Replace(date, ".", "-", -1)
+
 	return time.Parse("2006-01-02 15:04:05", date)
 }
 
 func ParseDate(date string) (time.Time, error) {
 	date = strings.Replace(date, "/", "-", -1)
 	date = strings.Replace(date, ".", "-", -1)
+
 	return time.Parse("2006-01-02", date)
 }
 
 func IsValidTime(s string) bool {
 	_, err := time.Parse("2006-01-02 15:04:05", s)
+
 	if err != nil {
 		return false
 	}
+
 	return true
 }
 
 func IsValidDate(s string) bool {
 	_, err := time.Parse("2006-01-02", s)
+
 	if err != nil {
 		return false
 	}
+
 	return true
+}
+
+func decodeTime(v reflect.Value, s string) {
+	t := v.Type()
+
+	for _, f := range allowedTimeFormats {
+		if p, err := time.Parse(f, s); err == nil {
+			v.Set(reflect.ValueOf(p).Convert(v.Type()))
+			return
+		}
+	}
+
+	panic("cannot decode string `" + s + "` as " + t.String())
+}
+
+func decodeURL(v reflect.Value, s string) {
+	t := v.Type()
+
+	if u, err := url.Parse(s); err == nil {
+		v.Set(reflect.ValueOf(*u).Convert(v.Type()))
+		return
+	}
+
+	panic("cannot decode string `" + s + "` as " + t.String())
+}
+
+var allowedTimeFormats = []string{
+	"2006-01-02T15:04:05.999999999Z07:00",
+	"2006-01-02T15:04:05.999999999Z07",
+	"2006-01-02T15:04:05.999999999Z",
+	"2006-01-02T15:04:05.999999999",
+	"2006-01-02T15:04:05Z07:00",
+	"2006-01-02T15:04:05Z07",
+	"2006-01-02T15:04:05Z",
+	"2006-01-02T15:04:05",
+	"2006-01-02T15:04Z",
+	"2006-01-02T15:04",
+	"2006-01-02T15Z",
+	"2006-01-02T15",
+	"2006-01-02",
+	"2006-01",
+	"2006",
+	"15:04:05.999999999Z07:00",
+	"15:04:05.999999999Z07",
+	"15:04:05.999999999Z",
+	"15:04:05.999999999",
+	"15:04:05Z07:00",
+	"15:04:05Z07",
+	"15:04:05Z",
+	"15:04:05",
+	"15:04Z",
+	"15:04",
+	"15Z",
+	"15",
 }

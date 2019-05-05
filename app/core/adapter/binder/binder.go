@@ -22,7 +22,9 @@ type (
 	}
 
 	// DefaultBinder is the default implementation of the Binder interface.
-	DefaultBinder struct{}
+	DefaultBinder struct {
+		ignoreError bool
+	}
 
 	// BindUnmarshaler is the interface used to wrap the UnmarshalParam method.
 	BindUnmarshaler interface {
@@ -31,9 +33,9 @@ type (
 	}
 )
 
-func New() *DefaultBinder {
+func New(ignoreError bool) *DefaultBinder {
 	return &DefaultBinder{
-
+		ignoreError: ignoreError,
 	}
 }
 
@@ -43,7 +45,9 @@ func (b *DefaultBinder) Bind(i interface{}, c echo.Context) (err error) {
 	if req.ContentLength == 0 {
 		if req.Method == http.MethodGet || req.Method == http.MethodDelete {
 			if err = b.bindData(i, c.QueryParams(), "query"); err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
+				if b.ignoreError {
+					return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
+				}
 			}
 			return
 		}
@@ -79,7 +83,9 @@ func (b *DefaultBinder) Bind(i interface{}, c echo.Context) (err error) {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
 		}
 		if err = b.bindData(i, params, "form"); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
+			if b.ignoreError {
+				return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
+			}
 		}
 	default:
 		return echo.ErrUnsupportedMediaType
@@ -324,7 +330,7 @@ func setFloatField(value string, bitSize int, field reflect.Value) error {
 }
 
 func setTimeField(v reflect.Value, s string) error {
-	// t := v.Type()
+	t := v.Type()
 
 	p, err := parseTime(s)
 	if err == nil {
@@ -332,12 +338,11 @@ func setTimeField(v reflect.Value, s string) error {
 		return nil
 	}
 
-	return err
-	// return errors.New("cannot decode string `" + s + "` as " + t.String())
+	return errors.New("cannot decode string `" + s + "` as " + t.String())
 }
 
 func setURLField(v reflect.Value, s string) error {
-	// t := v.Type()
+	t := v.Type()
 
 	u, err := url.Parse(s)
 
@@ -346,8 +351,7 @@ func setURLField(v reflect.Value, s string) error {
 		return nil
 	}
 
-	return err
-	// return errors.New("cannot decode string `" + s + "` as " + t.String())
+	return errors.New("cannot decode string `" + s + "` as " + t.String())
 }
 
 func parseTime(datestr string) (time.Time, error) {

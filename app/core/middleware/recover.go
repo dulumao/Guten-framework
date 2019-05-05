@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -57,7 +58,26 @@ func Recover() echo.MiddlewareFunc {
 						err = fmt.Errorf("%v", r)
 					}
 
-					frames := stack.Callers(4)
+					// frames := stack.Callers(0)
+					// frames := stack.Callers(4)
+
+					// depthOfPanic := findPanic()
+					depthOfTemplateError := findTemplateError()
+					skipFrames := 0
+
+					/*if depthOfPanic != 0 {
+						skipFrames = depthOfPanic + 1
+					} else {
+						skipFrames = findTemplateError() + 1
+					}*/
+
+					if depthOfTemplateError != 0 {
+						skipFrames = depthOfTemplateError - 1
+					} else {
+						skipFrames = findPanic() + 1
+					}
+
+					frames := stack.Callers(skipFrames)
 
 					if env.Value.Server.Debug {
 						_ = fmt.Sprintf(logFmt, levelColor("PANIC")+pathColor(" at "+c.Request().URL.Path), err, frames.String())
@@ -96,6 +116,43 @@ func Recover() echo.MiddlewareFunc {
 			}()
 
 			return next(c)
+		}
+	}
+}
+
+func findPanic() int {
+	stack := make([]uintptr, 50)
+	// skip two frames: runtime.Callers + findPanic
+	nCallers := runtime.Callers(2, stack[:])
+	frames := runtime.CallersFrames(stack[:nCallers])
+
+	for i := 0; ; i++ {
+		frame, more := frames.Next()
+
+		if frame.Function == "runtime.gopanic" {
+			return i
+		}
+
+		if !more {
+			return 0
+		}
+	}
+}
+
+func findTemplateError() int {
+	stack := make([]uintptr, 12)
+	nCallers := runtime.Callers(0, stack)
+	frames := runtime.CallersFrames(stack[:nCallers])
+
+	for i := 0; ; i++ {
+		frame, more := frames.Next()
+		_ = more
+		// Function: (string) (len=42) "github.com/labstack/echo.(*context).Render",
+		if strings.Contains(frame.Function, "github.com/labstack/echo.(*context).Render") {
+			return i
+		} else if !more {
+			// Exhausted the stack, take deepest.
+			return 0
 		}
 	}
 }

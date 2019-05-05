@@ -16,14 +16,9 @@ import (
 )
 
 type (
-	// Binder is the interface that wraps the Bind method.
-	Binder interface {
-		Bind(i interface{}, c echo.Context) error
-	}
-
-	// DefaultBinder is the default implementation of the Binder interface.
-	DefaultBinder struct {
-		ignoreError bool
+	// Binder is the default implementation of the Echo Binder interface.
+	Binder struct {
+		IgnoreError bool
 	}
 
 	// BindUnmarshaler is the interface used to wrap the UnmarshalParam method.
@@ -33,19 +28,25 @@ type (
 	}
 )
 
-func New(ignoreError bool) *DefaultBinder {
-	return &DefaultBinder{
-		ignoreError: ignoreError,
+func New(ignoreError ...bool) *Binder {
+	var IgnoreError = false
+
+	if len(ignoreError) > 0 {
+		IgnoreError = ignoreError[0]
+	}
+
+	return &Binder{
+		IgnoreError: IgnoreError,
 	}
 }
 
 // Bind implements the `Binder#Bind` function.
-func (b *DefaultBinder) Bind(i interface{}, c echo.Context) (err error) {
+func (b *Binder) Bind(i interface{}, c echo.Context) (err error) {
 	req := c.Request()
 	if req.ContentLength == 0 {
 		if req.Method == http.MethodGet || req.Method == http.MethodDelete {
 			if err = b.bindData(i, c.QueryParams(), "query"); err != nil {
-				if b.ignoreError {
+				if b.IgnoreError {
 					return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
 				}
 			}
@@ -83,7 +84,7 @@ func (b *DefaultBinder) Bind(i interface{}, c echo.Context) (err error) {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
 		}
 		if err = b.bindData(i, params, "form"); err != nil {
-			if b.ignoreError {
+			if b.IgnoreError {
 				return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
 			}
 		}
@@ -93,7 +94,7 @@ func (b *DefaultBinder) Bind(i interface{}, c echo.Context) (err error) {
 	return
 }
 
-func (b *DefaultBinder) bindData(ptr interface{}, data map[string][]string, tag string) error {
+func (b *Binder) bindData(ptr interface{}, data map[string][]string, tag string) error {
 	typ := reflect.TypeOf(ptr).Elem()
 	val := reflect.ValueOf(ptr).Elem()
 
@@ -104,9 +105,11 @@ func (b *DefaultBinder) bindData(ptr interface{}, data map[string][]string, tag 
 	for i := 0; i < typ.NumField(); i++ {
 		typeField := typ.Field(i)
 		structField := val.Field(i)
+
 		if !structField.CanSet() {
 			continue
 		}
+
 		structFieldKind := structField.Kind()
 		inputFieldName := typeField.Tag.Get(tag)
 
@@ -150,6 +153,7 @@ func (b *DefaultBinder) bindData(ptr interface{}, data map[string][]string, tag 
 		}
 
 		numElems := len(inputValue)
+
 		if structFieldKind == reflect.Slice && numElems > 0 {
 			sliceOf := structField.Type().Elem().Kind()
 			slice := reflect.MakeSlice(structField.Type(), numElems, numElems)
@@ -218,29 +222,6 @@ func setWithProperType(valueKind reflect.Kind, val string, structField reflect.V
 		} else if structField.Type().ConvertibleTo(urlType) {
 			return setURLField(structField, val)
 		}
-		// for _, f := range allowedTimeFormats {
-		// 	if p, err := time.Parse(f, val); err == nil {
-		// 		structField.Set(reflect.ValueOf(p))
-		// 		break
-		// 	}
-		// }
-		// 时间类型
-		// var t time.Time
-		// var err error
-		//
-		// val = strings.Replace(val, " 00:00:00", "", -1)
-		//
-		// if IsValidDate(val) {
-		// 	t, err = ParseDate(val)
-		// 	if err == nil {
-		// 		structField.Set(reflect.ValueOf(t))
-		// 	}
-		// } else if IsValidTime(val) {
-		// 	t, err = ParseTime(val)
-		// 	if err == nil {
-		// 		structField.Set(reflect.ValueOf(t))
-		// 	}
-		// }
 	default:
 		return errors.New("unknown type")
 	}
@@ -330,6 +311,10 @@ func setFloatField(value string, bitSize int, field reflect.Value) error {
 }
 
 func setTimeField(v reflect.Value, s string) error {
+	if s == "" {
+		s = time.Time{}.String()
+	}
+
 	t := v.Type()
 
 	p, err := parseTime(s)

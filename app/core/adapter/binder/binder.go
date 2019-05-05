@@ -208,9 +208,9 @@ func setWithProperType(valueKind reflect.Kind, val string, structField reflect.V
 		structField.SetString(val)
 	case reflect.Struct:
 		if structField.Type().ConvertibleTo(timeType) {
-			decodeTime(structField, val)
+			return setTimeField(structField, val)
 		} else if structField.Type().ConvertibleTo(urlType) {
-			decodeURL(structField, val)
+			return setURLField(structField, val)
 		}
 		// for _, f := range allowedTimeFormats {
 		// 	if p, err := time.Parse(f, val); err == nil {
@@ -323,60 +323,31 @@ func setFloatField(value string, bitSize int, field reflect.Value) error {
 	return err
 }
 
-func ParseTime(date string) (time.Time, error) {
-	date = strings.Replace(date, "/", "-", -1)
-	date = strings.Replace(date, ".", "-", -1)
+func setTimeField(v reflect.Value, s string) error {
+	// t := v.Type()
 
-	return time.Parse("2006-01-02 15:04:05", date)
-}
-
-func ParseDate(date string) (time.Time, error) {
-	date = strings.Replace(date, "/", "-", -1)
-	date = strings.Replace(date, ".", "-", -1)
-
-	return time.Parse("2006-01-02", date)
-}
-
-func IsValidTime(s string) bool {
-	_, err := time.Parse("2006-01-02 15:04:05", s)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-func IsValidDate(s string) bool {
-	_, err := time.Parse("2006-01-02", s)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-func decodeTime(v reflect.Value, s string) {
-	t := v.Type()
-
-	if p, err := parseTime(s); err == nil {
+	p, err := parseTime(s)
+	if err == nil {
 		v.Set(reflect.ValueOf(p).Convert(v.Type()))
-		return
+		return nil
 	}
 
-	panic("cannot decode string `" + s + "` as " + t.String())
+	return err
+	// return errors.New("cannot decode string `" + s + "` as " + t.String())
 }
 
-func decodeURL(v reflect.Value, s string) {
-	t := v.Type()
+func setURLField(v reflect.Value, s string) error {
+	// t := v.Type()
 
-	if u, err := url.Parse(s); err == nil {
+	u, err := url.Parse(s)
+
+	if err == nil {
 		v.Set(reflect.ValueOf(*u).Convert(v.Type()))
-		return
+		return nil
 	}
 
-	panic("cannot decode string `" + s + "` as " + t.String())
+	return err
+	// return errors.New("cannot decode string `" + s + "` as " + t.String())
 }
 
 func parseTime(datestr string) (time.Time, error) {

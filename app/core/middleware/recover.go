@@ -125,18 +125,25 @@ func findPanic() int {
 	// skip two frames: runtime.Callers + findPanic
 	nCallers := runtime.Callers(2, stack[:])
 	frames := runtime.CallersFrames(stack[:nCallers])
+	var skipNumber = 0
 
 	for i := 0; ; i++ {
 		frame, more := frames.Next()
 
 		if frame.Function == "runtime.gopanic" {
-			return i
+			skipNumber = i
+		}
+
+		if frame.Function == "runtime.sigpanic" {
+			skipNumber = i
 		}
 
 		if !more {
-			return 0
+			return skipNumber
 		}
 	}
+
+	return skipNumber
 }
 
 func findTemplateError() int {

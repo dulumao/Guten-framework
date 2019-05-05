@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/creasty/defaults"
 	"github.com/labstack/echo"
 	"net/http"
 	"net/url"
@@ -42,7 +43,14 @@ func New(ignoreError ...bool) *Binder {
 
 // Bind implements the `Binder#Bind` function.
 func (b *Binder) Bind(i interface{}, c echo.Context) (err error) {
+	// set struct default with github.com/creasty/defaults
+	if err := defaults.Set(i); err != nil {
+		// ignore type errors
+		// panic(err)
+	}
+
 	req := c.Request()
+
 	if req.ContentLength == 0 {
 		if req.Method == http.MethodGet || req.Method == http.MethodDelete {
 			if err = b.bindData(i, c.QueryParams(), "query"); err != nil {
@@ -181,8 +189,8 @@ func setWithProperType(valueKind reflect.Kind, val string, structField reflect.V
 		_        = reflect.TypeOf(string(""))
 		_        = reflect.TypeOf(map[string]interface{}{})
 		timeType = reflect.TypeOf(time.Time{})
-		_        = reflect.TypeOf(&time.Time{})
-		urlType  = reflect.TypeOf(url.URL{})
+		// timeTypePtr = reflect.TypeOf(&time.Time{})
+		urlType = reflect.TypeOf(url.URL{})
 	)
 
 	switch valueKind {

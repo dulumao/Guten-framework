@@ -8,6 +8,7 @@ require (
 	github.com/CloudyKit/jet v2.1.2+incompatible
 	github.com/Unknwon/com v0.0.0-20190321035513-0fed4efef755
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff
+	github.com/creasty/defaults v1.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dulumao/Guten-utils v0.0.0-20190430080047-f2c8b640ab7b
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect

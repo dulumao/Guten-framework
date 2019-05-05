@@ -43,12 +43,6 @@ func New(ignoreError ...bool) *Binder {
 
 // Bind implements the `Binder#Bind` function.
 func (b *Binder) Bind(i interface{}, c echo.Context) (err error) {
-	// set struct default with github.com/creasty/defaults
-	if err := defaults.Set(i); err != nil {
-		// ignore type errors
-		// panic(err)
-	}
-
 	req := c.Request()
 
 	if req.ContentLength == 0 {
@@ -108,6 +102,12 @@ func (b *Binder) bindData(ptr interface{}, data map[string][]string, tag string)
 
 	if typ.Kind() != reflect.Struct {
 		return errors.New("binding element must be a struct")
+	}
+
+	// set struct default with github.com/creasty/defaults
+	if err := defaults.Set(ptr); err != nil {
+		// return type errors
+		return err
 	}
 
 	for i := 0; i < typ.NumField(); i++ {

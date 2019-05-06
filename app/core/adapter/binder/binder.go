@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/creasty/defaults"
+	"github.com/dulumao/Guten-utils/dump"
 	"github.com/labstack/echo"
 	"net/http"
 	"net/url"
@@ -104,11 +104,11 @@ func (b *Binder) bindData(ptr interface{}, data map[string][]string, tag string)
 		return errors.New("binding element must be a struct")
 	}
 
-	// set struct default with github.com/creasty/defaults
-	if err := defaults.Set(ptr); err != nil {
-		// return type errors
-		return err
-	}
+	// // set struct default with github.com/creasty/defaults
+	// if err := defaults.Set(ptr); err != nil {
+	// 	// return type errors
+	// 	return err
+	// }
 
 	for i := 0; i < typ.NumField(); i++ {
 		typeField := typ.Field(i)
@@ -278,6 +278,9 @@ func setIntField(value string, bitSize int, field reflect.Value) error {
 	if value == "" {
 		value = "0"
 	}
+
+	dump.DD2(field)
+
 	intVal, err := strconv.ParseInt(value, 10, bitSize)
 	if err == nil {
 		field.SetInt(intVal)

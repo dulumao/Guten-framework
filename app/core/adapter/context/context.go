@@ -5,6 +5,7 @@ import (
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
 	"github.com/dulumao/Guten-utils/conv"
 	"github.com/labstack/echo"
+	"strings"
 	"time"
 )
 
@@ -35,6 +36,44 @@ func (self *Context) ParamInt(name string) int {
 	return conv.Int(self.Param(name))
 }
 
+func (self *Context) ParamInt8(name string) int8 {
+	return conv.Int8(self.Param(name))
+}
+
+func (self *Context) ParamInt16(name string) int16 {
+	return conv.Int16(self.Param(name))
+}
+
+func (self *Context) ParamInt64(name string) int64 {
+	return conv.Int64(self.Param(name))
+}
+
+func (self *Context) ParamUint(name string) uint {
+	return conv.Uint(self.Param(name))
+}
+
+func (self *Context) ParamUint8(name string) uint8 {
+	return conv.Uint8(self.Param(name))
+}
+
+func (self *Context) ParamUint16(name string) uint16 {
+	return conv.Uint16(self.Param(name))
+}
+
+func (self *Context) ParamUint64(name string) uint64 {
+	return conv.Uint64(self.Param(name))
+}
+
+func (self *Context) HasParam(name string) bool {
+	token := self.QueryParam(name)
+
+	if token == "" {
+		return false
+	}
+
+	return false
+}
+
 func (self *Context) IsPost() bool {
 	return self.Request().Method == echo.POST
 }
@@ -56,5 +95,5 @@ func (self *Context) IsPut() bool {
 }
 
 func (self *Context) IsAjax() bool {
-	return self.Request().Header.Get("X-Requested-With") == "xmlhttprequest"
+	return strings.ToLower(self.Request().Header.Get("X-Requested-With")) == "xmlhttprequest"
 }

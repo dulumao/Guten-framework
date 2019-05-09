@@ -65,7 +65,7 @@ func (self *Context) ParamUint64(name string) uint64 {
 }
 
 func (self *Context) HasParam(name string) bool {
-	v := self.QueryParam(name)
+	v := self.Param(name)
 
 	if v == "" {
 		return false
@@ -75,7 +75,7 @@ func (self *Context) HasParam(name string) bool {
 }
 
 func (self *Context) GetParam(name string) (string, bool) {
-	v := self.QueryParam(name)
+	v := self.Param(name)
 
 	if v == "" {
 		return "", false

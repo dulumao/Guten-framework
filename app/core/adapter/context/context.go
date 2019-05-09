@@ -65,13 +65,23 @@ func (self *Context) ParamUint64(name string) uint64 {
 }
 
 func (self *Context) HasParam(name string) bool {
-	token := self.QueryParam(name)
+	v := self.QueryParam(name)
 
-	if token == "" {
-		return false
+	if v == "" {
+		return true
 	}
 
 	return false
+}
+
+func (self *Context) GetParam(name string) (string, bool) {
+	v := self.QueryParam(name)
+
+	if v == "" {
+		return v, true
+	}
+
+	return "", false
 }
 
 func (self *Context) IsPost() bool {

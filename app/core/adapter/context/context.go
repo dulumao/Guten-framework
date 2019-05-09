@@ -68,20 +68,20 @@ func (self *Context) HasParam(name string) bool {
 	v := self.QueryParam(name)
 
 	if v == "" {
-		return true
+		return false
 	}
 
-	return false
+	return true
 }
 
 func (self *Context) GetParam(name string) (string, bool) {
 	v := self.QueryParam(name)
 
 	if v == "" {
-		return v, true
+		return "", false
 	}
 
-	return "", false
+	return v, true
 }
 
 func (self *Context) IsPost() bool {

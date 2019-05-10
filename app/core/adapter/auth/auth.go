@@ -7,7 +7,7 @@ import (
 )
 
 type IAuth interface {
-	GetId() int
+	GetId() interface{}
 	GetUserName() string
 	GetGuard() string
 	GetUser(int)

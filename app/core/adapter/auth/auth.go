@@ -2,7 +2,6 @@ package auth
 
 import (
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
-	"github.com/dulumao/Guten-utils/conv"
 	"github.com/labstack/echo"
 )
 
@@ -10,7 +9,7 @@ type IAuth interface {
 	GetId() interface{}
 	GetUserName() string
 	GetGuard() string
-	GetUser(int)
+	GetUser(interface{})
 }
 
 type AuthManager struct {
@@ -51,7 +50,7 @@ func (self *AuthManager) Guest(auth IAuth) bool {
 func (self *AuthManager) User(auth IAuth) {
 	uid := self.Session.Get("auth_" + auth.GetGuard())
 
-	auth.GetUser(conv.Int(uid))
+	auth.GetUser(uid)
 }
 
 func (self AuthManager) Logout(auth IAuth) {

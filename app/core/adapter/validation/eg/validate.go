@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-utils/dump"
 	"github.com/gookit/validate"
 	"time"
@@ -11,6 +11,7 @@ import (
 type UserForm struct {
 	Name              string    `filter:"upper" valid:"required|minLen:7"`
 	Email             string    `valid:"email"`
+	QQ                string    `valid:"required|qq"`
 	Age               int       `valid:"required|int|min:1|max:99"`
 	CreateAt          int       `valid:"min:1"`
 	Safe              int       `valid:"-"`
@@ -33,15 +34,17 @@ func (f UserForm) Messages() map[string]string {
 		"Name.required":             "message for special field",
 		"Password.isUint":           "{field} 必须是整数",
 		"ConfirmedPassword.eqField": "确认密码必须相等",
+		"QQ.qq":                     "{field}不符合规则",
 	}
 }
 
 // Translates you can custom field translates.
 func (f UserForm) Translates() map[string]string {
 	return validate.MS{
-		"Name":     "User Name",
-		"Email":    "User Email",
+		"Name":     "用户名",
+		"Email":    "邮箱",
 		"Password": "密码",
+		"QQ":       "QQ号",
 	}
 }
 
@@ -54,22 +57,26 @@ func main() {
 		Password:          "111a",
 		ConfirmedPassword: "111a",
 		Test:              "one",
+		QQ:                "test",
 	}
 
-	validate.Config(func(opt *validate.GlobalOption) {
-		opt.FilterTag = "filter"
-		opt.ValidateTag = "valid"
-		opt.StopOnError = true
-		opt.SkipOnEmpty = true
-	})
+	validation.New()
 
-	v := validate.Struct(u)
-	dump.DD(u)
-	if v.Validate() { // validate ok
-		// do something ...
-	} else {
-		fmt.Println(v.Errors.All()) // all error messages
-		// fmt.Println(v.Errors.One()) // returns a random error message text
-		// fmt.Println(v.Errors.Field("Name")) // returns error messages of the field
+	err := validation.Validator.Validate(u)
+
+	if err != nil {
+		// panic(err)
+		errs := err.(validate.Errors)
+		dump.DD(errs.All())
+		return
 	}
+
+	dump.DD("pass")
+	// if v.Validate() { // validate ok
+	// 	// do something ...
+	// } else {
+	// 	fmt.Println(v.Errors.All()) // all error messages
+	// 	// fmt.Println(v.Errors.One()) // returns a random error message text
+	// 	// fmt.Println(v.Errors.Field("Name")) // returns error messages of the field
+	// }
 }

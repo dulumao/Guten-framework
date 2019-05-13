@@ -26,7 +26,7 @@ var (
 )
 
 func New() {
-	filepath.Walk("resources/locales", func(path string, info os.FileInfo, err error) error {
+	filepath.Walk("assets/locales", func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".ini") {
 			SetMessage(strings.Split(filepath.Base(path), ".")[0], path)
 		}
@@ -40,7 +40,7 @@ func New() {
 		for _, f := range files {
 			if f.IsDir() {
 				pluginName := f.Name()
-				pluginPath := "plugins" + string(os.PathSeparator) + pluginName + string(os.PathSeparator) + "resources/locales"
+				pluginPath := "modules" + string(os.PathSeparator) + pluginName + string(os.PathSeparator) + "locales"
 
 				filepath.Walk(pluginPath, func(path string, info os.FileInfo, err error) error {
 					if strings.Contains(path, ".ini") {
@@ -54,12 +54,12 @@ func New() {
 	}
 }
 
-func Default(context echo.Context) *Locale {
+func Default(c echo.Context) *Locale {
 	var localeString = ""
-	var browserLang = context.FormValue("lang")
+	var browserLang = c.FormValue("lang")
 
 	if browserLang != "" {
-		context.SetCookie(&http.Cookie{
+		c.SetCookie(&http.Cookie{
 			Name:   "lang",
 			Value:  browserLang,
 			Path:   "/",
@@ -69,10 +69,10 @@ func Default(context echo.Context) *Locale {
 
 		localeString = browserLang
 	} else {
-		if lang, err := context.Cookie("lang"); err != nil {
+		if lang, err := c.Cookie("lang"); err != nil {
 
-			if acceptLanguage, err := NewLocale(context.Request().Header.Get("Accept-Language")); err != nil {
-				// localeString = vars.Kernel.Config.Server.FallbackLocale
+			if acceptLanguage, err := NewLocale(c.Request().Header.Get("Accept-Language")); err != nil {
+				// localeString = env.Value.Server.FallbackLocale
 				localeString = "en"
 			} else {
 				localeString = acceptLanguage.Language + "-" + acceptLanguage.Country

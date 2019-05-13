@@ -10,6 +10,7 @@ import (
 // UserForm struct
 type UserForm struct {
 	Name              string    `filter:"upper" valid:"required|minLen:7"`
+	Avatar            string    `filter:"upper" valid:"required"`
 	Email             string    `valid:"email"`
 	QQ                string    `valid:"required|qq"`
 	Age               int       `valid:"required|int|min:1|max:99"`
@@ -68,10 +69,21 @@ func main() {
 		// panic(err)
 		errs := err.(validate.Errors)
 		dump.DD(errs.All())
+
+		// t := validate.NewTranslator()
+		// t.LoadMessages(locales.Locales["zh-CN"])
+		// t.AddFieldMap(validate.MS{
+		// 	"Avatar.required": "1111",
+		// })
+		//
+		// dump.DD(t.FieldMap())
+
 		return
 	}
 
 	dump.DD("pass")
+
+	// v := validate.Struct(u)
 	// if v.Validate() { // validate ok
 	// 	// do something ...
 	// } else {

@@ -46,6 +46,14 @@ func (self *Validation) Validate(i interface{}) error {
 	return v.Errors
 }
 
+func (self *Validation) Struct(i interface{}) *validate.Validation {
+	v := validate.Struct(i)
+
+	// locales.Register(v, "zh-CN")
+
+	return v
+}
+
 func (self *Validation) Map(v map[string]interface{}) *validate.Validation {
 	return validate.Map(v, self.scene...)
 }
@@ -58,6 +66,10 @@ func (self *Validation) Request(c echo.Context) *validate.Validation {
 	r := c.Request()
 
 	return validate.Request(r)
+}
+
+func (self *Validation) Regexp(str string, pattern string) bool {
+	return validate.Regexp(str, pattern)
 }
 
 func (self *Validation) addValidations() {

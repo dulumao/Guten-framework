@@ -19,6 +19,7 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/labstack/gommon/random"
+	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,6 +32,7 @@ func New() *echo.Echo {
 	env.New()
 	cache.New()
 	observer.New()
+	validator.New()
 
 	app := echo.New()
 
@@ -139,8 +141,8 @@ func New() *echo.Echo {
 	app.Use(session.New(env.Value.Session.Name, store))
 
 	app.Renderer = template.New(false, env.Value.Framework.TemplateDirs...)
-	app.Validator = validation.New()
 	app.Binder = binder.New()
+	app.Validator = validation.Validator
 
 	app.HTTPErrorHandler = func(err error, context echo.Context) {
 		// var code = http.StatusInternalServerError

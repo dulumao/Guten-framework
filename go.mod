@@ -25,6 +25,7 @@ require (
 	github.com/go-playground/locales v0.12.1
 	github.com/go-playground/universal-translator v0.16.0
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gookit/validate v1.1.0 // indirect
 	github.com/gorilla/sessions v1.1.3
 	github.com/jinzhu/gorm v1.9.4
 	github.com/jinzhu/now v1.0.0 // indirect

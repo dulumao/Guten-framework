@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
-	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-framework/app/core/env"
 	"github.com/dulumao/Guten-framework/app/core/helpers/view"
 	"github.com/dulumao/Guten-framework/app/core/observer"
@@ -13,6 +12,7 @@ import (
 	"github.com/dulumao/Guten-utils/dump"
 	"github.com/dulumao/Guten-utils/file"
 	"github.com/dulumao/Guten-utils/safemap"
+	"github.com/gookit/validate"
 	"github.com/labstack/echo"
 	"html/template"
 	"io"
@@ -91,8 +91,8 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	self.Engine.AddGlobal("HasValidError", func(key string) bool {
 		var errs = ctx.Get("errors")
 
-		if validErrors, can := errs.(error); can {
-			validResult := validation.GetErrorFields(validErrors, nil)
+		if validErrors, can := errs.(validate.Errors); can {
+			validResult := validErrors.All()
 
 			if _, ok := validResult[key]; ok {
 				return true
@@ -103,20 +103,78 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 	})
 	self.Engine.AddGlobal("GetValidError", func(key string) string {
 		var errs = ctx.Get("errors")
-		// uni := v.GetTranslator("zh_Hans_CN")
-		// uni := v.GetTranslator("en_US")
-		// validResult := validation.GetErrorFields(err, uni)
 
-		if validErrors, can := errs.(error); can {
-			validResult := validation.GetErrorFields(validErrors, nil)
-
-			if _, ok := validResult[key]; ok {
-				return validResult[key]["transText"]
-			}
+		if validErrors, can := errs.(validate.Errors); can {
+			return validErrors.Get(key)
 		}
 
 		return ""
 	})
+	self.Engine.AddGlobal("GetValidField", func(key string) []string {
+		var errs = ctx.Get("errors")
+
+		if validErrors, can := errs.(validate.Errors); can {
+			return validErrors.Field(key)
+		}
+
+		return []string{}
+	})
+	self.Engine.AddGlobal("GetValidAll", func(key string) map[string][]string {
+		var errs = ctx.Get("errors")
+
+		if validErrors, can := errs.(validate.Errors); can {
+			return validErrors.All()
+		}
+
+		return map[string][]string{}
+	})
+	self.Engine.AddGlobal("GetValidIsEmpty", func(key string) bool {
+		var errs = ctx.Get("errors")
+
+		if validErrors, can := errs.(validate.Errors); can {
+			return validErrors.Empty()
+		}
+
+		return true
+	})
+	self.Engine.AddGlobal("GetValidOneError", func(key string) string {
+		var errs = ctx.Get("errors")
+
+		if validErrors, can := errs.(validate.Errors); can {
+			validErrors.One()
+		}
+
+		return ""
+	})
+	// self.Engine.AddGlobal("HasValidError", func(key string) bool {
+	// 	var errs = ctx.Get("errors")
+	//
+	// 	if validErrors, can := errs.(error); can {
+	// 		validResult := validation.GetErrorFields(validErrors, nil)
+	//
+	// 		if _, ok := validResult[key]; ok {
+	// 			return true
+	// 		}
+	// 	}
+	//
+	// 	return false
+	// })
+	// self.Engine.AddGlobal("GetValidError", func(key string) string {
+	// 	var errs = ctx.Get("errors")
+	// 	// uni := v.GetTranslator("zh_Hans_CN")
+	// 	// uni := v.GetTranslator("en_US")
+	// 	// validResult := validation.GetErrorFields(err, uni)
+	//
+	// 	if validErrors, can := errs.(error); can {
+	// 		validResult := validation.GetErrorFields(validErrors, nil)
+	//
+	// 		if _, ok := validResult[key]; ok {
+	// 			return validResult[key]["transText"]
+	// 		}
+	// 	}
+	//
+	// 	return ""
+	// })
 
 	for k, v := range view.Funcs.Items() {
 		self.Engine.AddGlobal(conv.String(k), v)

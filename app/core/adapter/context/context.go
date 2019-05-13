@@ -3,7 +3,9 @@ package context
 import (
 	"github.com/dulumao/Guten-framework/app/core/adapter/auth"
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
+	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-utils/conv"
+	"github.com/gookit/validate"
 	"github.com/labstack/echo"
 	"strings"
 	"time"
@@ -106,4 +108,40 @@ func (self *Context) IsPut() bool {
 
 func (self *Context) IsAjax() bool {
 	return strings.ToLower(self.Request().Header.Get("X-Requested-With")) == "xmlhttprequest"
+}
+
+// lang like zh-CN
+func (self *Context) ValidateStruct(i interface{}, lang ...interface{}) validate.Errors {
+	if len(lang) > 0 {
+		return validation.Validator.Struct(i, lang[0])
+	}
+
+	return validation.Validator.Struct(i, nil)
+}
+
+// lang like zh-CN
+func (self *Context) ValidateMap(i map[string]interface{}, lang ...interface{}) validate.Errors {
+	if len(lang) > 0 {
+		return validation.Validator.Map(i, lang[0])
+	}
+
+	return validation.Validator.Map(i, nil)
+}
+
+// lang like zh-CN
+func (self *Context) ValidateJSON(i string, lang ...interface{}) validate.Errors {
+	if len(lang) > 0 {
+		return validation.Validator.JSON(i, lang[0])
+	}
+
+	return validation.Validator.JSON(i, nil)
+}
+
+// lang like zh-CN
+func (self *Context) ValidateRequest(lang ...interface{}) validate.Errors {
+	if len(lang) > 0 {
+		return validation.Validator.Request(self)
+	}
+
+	return validation.Validator.Request(self)
 }

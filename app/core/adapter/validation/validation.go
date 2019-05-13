@@ -2,6 +2,7 @@ package validation
 
 import (
 	"github.com/gookit/validate"
+	"github.com/gookit/validate/locales"
 	"github.com/labstack/echo"
 	"regexp"
 )
@@ -49,22 +50,54 @@ func (self *Validation) Validate(i interface{}) error {
 	return v.Errors
 }
 
-func (self *Validation) Map(v map[string]interface{}) *validate.Validation {
-	return validate.Map(v, self.scene...)
+func (self *Validation) Struct(i interface{}, lang interface{}) validate.Errors {
+	v := validate.Struct(i)
+
+	return self.getErrors(v, lang)
 }
 
-func (self *Validation) JSON(v string) *validate.Validation {
-	return validate.JSON(v, self.scene...)
+func (self *Validation) Map(i map[string]interface{}, lang interface{}) validate.Errors {
+	v := validate.Map(i, self.scene...)
+
+	return self.getErrors(v, lang)
 }
 
-func (self *Validation) Request(c echo.Context) *validate.Validation {
+func (self *Validation) JSON(i string, lang interface{}) validate.Errors {
+	v := validate.JSON(i, self.scene...)
+
+	return self.getErrors(v, lang)
+}
+
+func (self *Validation) Request(c echo.Context) validate.Errors {
 	r := c.Request()
+	v := validate.Request(r)
 
-	return validate.Request(r)
+	return self.getErrors(v, nil)
 }
 
 func (self *Validation) Regexp(str string, pattern string) bool {
 	return validate.Regexp(str, pattern)
+}
+
+func (self *Validation) getErrors(v *validate.Validation, lang interface{}) validate.Errors {
+	if lang != nil {
+		switch lang.(type) {
+		case string:
+			message := lang.(string)
+			if locales, ok := locales.Locales[message]; ok {
+				v.WithMessages(locales)
+			}
+		case map[string]string:
+			locales := lang.(map[string]string)
+			v.WithMessages(locales)
+		}
+	}
+
+	if v.Validate() {
+		return nil
+	}
+
+	return v.Errors
 }
 
 func (self *Validation) addValidations() {

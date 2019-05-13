@@ -110,38 +110,26 @@ func (self *Context) IsAjax() bool {
 	return strings.ToLower(self.Request().Header.Get("X-Requested-With")) == "xmlhttprequest"
 }
 
-// lang like zh-CN
-func (self *Context) ValidateStruct(i interface{}, lang ...interface{}) validate.Errors {
-	if len(lang) > 0 {
-		return validation.Validator.Struct(i, lang[0])
-	}
+func (self *Context) ValidateStruct(i interface{}) (*validate.Validation) {
+	v := validation.Validator.Struct(i)
 
-	return validation.Validator.Struct(i, nil)
+	return v
 }
 
-// lang like zh-CN
-func (self *Context) ValidateMap(i map[string]interface{}, lang ...interface{}) validate.Errors {
-	if len(lang) > 0 {
-		return validation.Validator.Map(i, lang[0])
-	}
+func (self *Context) ValidateMap(i map[string]interface{}) *validate.Validation {
+	v := validation.Validator.Map(i)
 
-	return validation.Validator.Map(i, nil)
+	return v
 }
 
-// lang like zh-CN
-func (self *Context) ValidateJSON(i string, lang ...interface{}) validate.Errors {
-	if len(lang) > 0 {
-		return validation.Validator.JSON(i, lang[0])
-	}
+func (self *Context) ValidateJSON(i string) *validate.Validation {
+	v := validation.Validator.JSON(i)
 
-	return validation.Validator.JSON(i, nil)
+	return v
 }
 
-// lang like zh-CN
-func (self *Context) ValidateRequest(lang ...interface{}) validate.Errors {
-	if len(lang) > 0 {
-		return validation.Validator.Request(self)
-	}
+func (self *Context) ValidateRequest() *validate.Validation {
+	v := validation.Validator.Request(self)
 
-	return validation.Validator.Request(self)
+	return v
 }

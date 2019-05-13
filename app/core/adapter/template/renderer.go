@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/CloudyKit/jet"
+	"github.com/dulumao/Guten-framework/app/core/adapter/i18n"
 	"github.com/dulumao/Guten-framework/app/core/adapter/session"
 	"github.com/dulumao/Guten-framework/app/core/env"
 	"github.com/dulumao/Guten-framework/app/core/helpers/view"
@@ -145,6 +146,11 @@ func (self *Renderer) Render(out io.Writer, name string, data interface{}, ctx e
 		}
 
 		return ""
+	})
+
+	self.Engine.AddGlobal("Tr", func(lang, format string, args ...interface{}) string {
+		// return i18n.Tr("en-US", "demo.name","matt")
+		return i18n.Tr(lang, format, args...)
 	})
 	// self.Engine.AddGlobal("HasValidError", func(key string) bool {
 	// 	var errs = ctx.Get("errors")

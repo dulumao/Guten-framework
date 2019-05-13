@@ -130,6 +130,10 @@ func findPanic() int {
 	for i := 0; ; i++ {
 		frame, more := frames.Next()
 
+		if frame.Function == "github.com/gookit/validate.(*Validation).Validate" {
+			skipNumber = i
+		}
+
 		if frame.Function == "runtime.gopanic" {
 			skipNumber = i
 		}

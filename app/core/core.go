@@ -19,7 +19,6 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/labstack/gommon/random"
-	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"os"
 	"os/signal"
@@ -32,7 +31,7 @@ func New() *echo.Echo {
 	env.New()
 	cache.New()
 	observer.New()
-	validator.New()
+	validation.New()
 
 	app := echo.New()
 

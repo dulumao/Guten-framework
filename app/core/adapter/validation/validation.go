@@ -13,6 +13,9 @@ type Validation struct {
 var Validator *Validation
 
 func New(scene ...string) {
+	// vv := validate.NewEmpty()
+
+	// vv.ValidateData()
 	validate.Config(func(opt *validate.GlobalOption) {
 		opt.FilterTag = "filter"
 		opt.ValidateTag = "valid"

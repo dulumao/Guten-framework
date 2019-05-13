@@ -63,7 +63,7 @@ func main() {
 		Code:              "9999",
 		UpdateAt:          time.Now(),
 		Password:          "111a",
-		ConfirmedPassword: "111a",
+		ConfirmedPassword: "111",
 		Test:              "one",
 		QQ:                "test",
 	}

@@ -12,7 +12,7 @@ type Validation struct {
 
 var Validator *Validation
 
-func New(scene ...string) *Validation {
+func New(scene ...string) {
 	validate.Config(func(opt *validate.GlobalOption) {
 		opt.FilterTag = "filter"
 		opt.ValidateTag = "valid"
@@ -27,8 +27,6 @@ func New(scene ...string) *Validation {
 	v.addValidations()
 
 	Validator = v
-
-	return Validator
 }
 
 func (self *Validation) Config(fn func(opt *validate.GlobalOption)) {
@@ -39,19 +37,13 @@ func (self *Validation) Config(fn func(opt *validate.GlobalOption)) {
 func (self *Validation) Validate(i interface{}) error {
 	v := validate.Struct(i)
 
+	// locales.Register(v, "zh-CN")
+
 	if v.Validate() {
 		return nil
 	}
 
 	return v.Errors
-}
-
-func (self *Validation) Struct(i interface{}) *validate.Validation {
-	v := validate.Struct(i)
-
-	// locales.Register(v, "zh-CN")
-
-	return v
 }
 
 func (self *Validation) Map(v map[string]interface{}) *validate.Validation {

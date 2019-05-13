@@ -4,6 +4,7 @@ import (
 	"github.com/dulumao/Guten-framework/app/core/adapter/validation"
 	"github.com/dulumao/Guten-utils/dump"
 	"github.com/gookit/validate"
+	"github.com/gookit/validate/locales"
 	"time"
 )
 
@@ -28,15 +29,21 @@ func (f UserForm) CustomValidator(val string) bool {
 	return len(val) == 4
 }
 
-// Messages you can custom validator error messages.
+// // Messages you can custom validator error messages.
+// func (f UserForm) Messages() map[string]string {
+// 	return validate.MS{
+// 		"required":                  "oh! the {field} is required",
+// 		"Name.required":             "message for special field",
+// 		"Password.isUint":           "{field} 必须是整数",
+// 		"ConfirmedPassword.eqField": "确认密码必须相等",
+// 		"QQ.qq":                     "{field}不符合规则",
+// 	}
+// }
+
 func (f UserForm) Messages() map[string]string {
-	return validate.MS{
-		"required":                  "oh! the {field} is required",
-		"Name.required":             "message for special field",
-		"Password.isUint":           "{field} 必须是整数",
-		"ConfirmedPassword.eqField": "确认密码必须相等",
-		"QQ.qq":                     "{field}不符合规则",
-	}
+	locale := locales.Locales["zh-CN"]
+
+	return locale
 }
 
 // Translates you can custom field translates.

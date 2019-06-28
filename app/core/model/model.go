@@ -123,8 +123,16 @@ func (self *Model) Where(v interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) *go
 	return query.Where(v)
 }
 
-func (self *Model) First(out interface{}) error {
-	if err := self.GetDB().Table(self.instance.TableName()).Where(self.instance).First(out).Error; err != nil {
+func (self *Model) First(out interface{}, wheres ...[]func(*gorm.DB) *gorm.DB) error {
+	var query = self.GetDB().Table(self.instance.TableName())
+
+	if len(wheres) > 0 {
+		for _, scope := range wheres[0] {
+			query = query.Scopes(scope)
+		}
+	}
+
+	if err := query.Where(self.instance).First(out).Error; err != nil {
 		return err
 	}
 
